@@ -29,13 +29,13 @@ Public Class RptAttendanceReport
     ''' 給与明細出力
     ''' </summary>
     Public Overloads Sub Output(ByRef cancelRequested As Boolean)
-        Dim frmVBReportsViewer As New frmVBReportsViewer
+        'Dim frmVBReportsViewer As New frmVBReportsViewer
         Dim yearMonthStr As String = DateUtil.DateToFormatString(TargetDate, "yyyyMM")
         Dim targetTeacherCode As String = ""
 
         Try
-            VbReportsEnvSetting(frmVBReportsViewer.CellReport1, frmVBReportsViewer.ViewerControl1)
-            frmVBReportsViewer.ViewerControl1.ShowProgressDialog = False
+            'VbReportsEnvSetting(frmVBReportsViewer.CellReport1, frmVBReportsViewer.ViewerControl1)
+            'frmVBReportsViewer.ViewerControl1.ShowProgressDialog = False
 
             Using uow As New DbTransactionScope()
                 Dim repo As New AttendanceReportRepository(uow, _closingState)
@@ -48,6 +48,10 @@ Public Class RptAttendanceReport
                 Dim lecturesALLDt As DataTable = repo.GetLectureList(yearMonthStr)
                 ' 日別勤怠一覧情報（全体）
                 Dim attendancesALLDt As DataTable = repo.GetAttendanceList(yearMonthStr)
+
+                Dim dict As Dictionary(Of String, Integer)
+                dict = PageCount(headsDt, allowancesALLDt, lecturesALLDt, attendancesALLDt)
+
 
                 Dim allowanceDt As DataTable
                 Dim lectureDt As DataTable
@@ -75,23 +79,25 @@ Public Class RptAttendanceReport
                     Dim where As String = WhereSql(targetTeacherCode)
                     Dim order As String = OrderBySql()
 
+                    Dim toatlPage As Integer = dict(targetTeacherCode)
+
                     ' １講師の給与明細情報取得
-                    allowanceDt = allowancesALLDt.Select(where, order).CopyToDataTable()
+                    allowanceDt = DataTableHelper.CloneDataTable(allowancesALLDt, where, order)
 
                     ' １講師の授業給明細情報取得
-                    lectureDt = lecturesALLDt.Select(where, order).CopyToDataTable()
+                    lectureDt = DataTableHelper.CloneDataTable(lecturesALLDt, where, order)
 
                     ' １講師の日別勤怠一覧情報取得
-                    attendanceDt = attendancesALLDt.Select(where, order).CopyToDataTable()
+                    attendanceDt = DataTableHelper.CloneDataTable(attendancesALLDt, where, order)
 
                     ' 給与明細ページ
-                    AddPage(New RptPageAllowanceList(TargetDate, allowanceDt, _closingState))
+                    AddPage(New RptPageAllowanceList(TargetDate, allowanceDt, _closingState, toatlPage))
 
                     ' 授業給明細ページ
-                    AddPage(New RptPageLectureList(TargetDate, lectureDt, _closingState))
+                    AddPage(New RptPageLectureList(TargetDate, lectureDt, _closingState, toatlPage))
 
                     ' 日別勤怠一覧ページ
-                    AddPage(New RptPageAttendanceList(TargetDate, attendanceDt, _closingState))
+                    AddPage(New RptPageAttendanceList(TargetDate, attendanceDt, _closingState, toatlPage))
 
                     RaiseEvent ProgressChanged(counter, totalCount, "給与明細データをPDFに出力しています...")
 
@@ -104,14 +110,14 @@ Public Class RptAttendanceReport
                 Next
             End Using
 
-            '' レポート出力
-            'Report()
+            ' レポート出力
+            Report()
 
             ' Viewerは表示しない
             'frmVBReportsViewer.ShowDialog()
 
             ' リソースの解放
-            frmVBReportsViewer.Dispose()
+            'frmVBReportsViewer.Dispose()
 
         Catch ex As Exception
             GlobalLog.Error("給与明細(PDF)出力に失敗しました" & " [講師コード:" & targetTeacherCode & "]", ex)
@@ -207,5 +213,42 @@ Public Class RptAttendanceReport
     Public Sub ExportReports(ByRef cancelRequested As Boolean) Implements IReportExporter.ExportReports
         Output(cancelRequested)
     End Sub
+
+    ''' <summary>
+    ''' 
+    ''' </summary>
+    ''' <param name="headsDt"></param>
+    ''' <param name="allowancesDt"></param>
+    ''' <param name="lecturesDt"></param>
+    ''' <param name="attendancesDt"></param>
+    ''' <returns></returns>
+    Private Function PageCount(headsDt As DataTable, allowancesDt As DataTable, lecturesDt As DataTable, attendancesDt As DataTable) As Dictionary(Of String, Integer)
+        Dim dict As New Dictionary(Of String, Integer)
+        Dim totalPages As Integer = 0
+        Dim teacherCode As String = ""
+
+        For Each row As DataRow In headsDt.Rows
+            totalPages = 0
+            teacherCode = row("Teacher_Code")
+            Dim where As String = WhereSql(teacherCode)
+
+
+            ' １講師の給与明細情報件数
+            Dim allowanceCnt As Integer = allowancesDt.Select(where).Count
+            totalPages += PageUtil.GetPageCount(allowanceCnt, 27, 33)
+
+            ' １講師の授業給明細情報件数
+            Dim lectureCnt As Integer = lecturesDt.Select(where).Count
+            totalPages += PageUtil.GetPageCount(lectureCnt, 28, 35)
+
+            ' １講師の日別勤怠情報件数
+            Dim attendanceCnt As Integer = attendancesDt.Select(where).Count
+            totalPages += PageUtil.GetPageCount(attendanceCnt, RptPageAttendanceList.MAX_ROWS_PAGE1, RptPageAttendanceList.MAX_ROWS_PAGE2)
+
+            dict.Add(teacherCode, totalPages)
+        Next
+
+        Return dict
+    End Function
 
 End Class

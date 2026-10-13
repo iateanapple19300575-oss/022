@@ -2,7 +2,7 @@
 ''' 日別勤怠一覧をPDF出力するレポートページクラス。
 ''' </summary>
 Public Class RptPageAttendanceList
-    Inherits VBReportPage2
+    Inherits VBReportPage
 
 #Region "[定数]"
 
@@ -10,7 +10,7 @@ Public Class RptPageAttendanceList
     Private Const REPORT_PAGE_NAME As String = ""
 
     ' ページタイトルの変数名
-    Private REPORT_SHEET_NAMES As String() = New String() {"AttendanceList", "AttendanceList2"}
+    Private REPORT_SHEET_NAMES As String = "AttendanceList"
 
     ' ページタイトル出力項目の変数
     Private Const REPORT_CELL_TITLE As String = "**TITLE"
@@ -89,17 +89,11 @@ Public Class RptPageAttendanceList
     Private Const SQL_COL_MIDNIGHT_WORKING_MINUTES As String = "Midnight_Working_Minutes"
     Private Const SQL_COL_CONTENTS As String = "Contents"
 
-    ' 一覧の先頭セル(列)
-    Private Const CELL_COL_OFFSET As Integer = 17
-
-    ' 一覧の先頭セル(行)
-    Private Const CELL_ROW_OFFSET As Integer = 6
-
     ' 1ページ目の最大明細行数
-    Private Const MAX_ROWS_PAGE1 As Integer = 27
+    Public Const MAX_ROWS_PAGE1 As Integer = 27
 
     ' 2ページ目以降の最大明細行数
-    Private Const MAX_ROWS_PAGE2 As Integer = 40
+    Public Const MAX_ROWS_PAGE2 As Integer = 40
 
     ' 締め状態
     Private _closingState As MonthlyClosingMode
@@ -133,7 +127,7 @@ Public Class RptPageAttendanceList
     ''' シート名
     ''' </summary>
     ''' <returns></returns>
-    Protected Overrides ReadOnly Property PageSheetName As String()
+    Protected Overrides ReadOnly Property PageSheetName As String
         Get
             Return REPORT_SHEET_NAMES
         End Get
@@ -141,6 +135,7 @@ Public Class RptPageAttendanceList
 
 #End Region
 
+    Private _totalPage As Integer
 
 #Region "[メソッド]"
 
@@ -157,9 +152,10 @@ Public Class RptPageAttendanceList
     ''' </summary>
     ''' <param name="targetDate"></param>
     ''' <param name="reportSourceDataTable"></param>
-    Public Sub New(ByVal targetDate As Date, ByVal reportSourceDataTable As DataTable, ByVal closingState As MonthlyClosingMode)
+    Public Sub New(ByVal targetDate As Date, ByVal reportSourceDataTable As DataTable, ByVal closingState As MonthlyClosingMode, totalPage As Integer)
         MyBase.New(targetDate, reportSourceDataTable)
         Me._closingState = closingState
+        Me._totalPage = totalPage
     End Sub
 
     ''' <summary>
@@ -189,6 +185,8 @@ Public Class RptPageAttendanceList
     Public Overrides Sub OutputDetail(ByVal dtTable As DataTable)
         Dim cellUtil As New CellReportUtil(m_CellReport)
         Dim rowNo As Integer = 0
+
+        '_totalPage
 
         ' 日別勤怠一覧(年月部)
         cellUtil.CellValue(FMT_CELL_YEAR, 0, rowNo, TargetDate.Year, ATTR_CELL_YEAR)
@@ -220,7 +218,7 @@ Public Class RptPageAttendanceList
                 ' 最大行数設定
                 MaxRowsPerPage = MAX_ROWS_PAGE2
                 ' 次頁目の設定
-                Page2Setup()
+                m_PageName = "AttendanceList2"
                 ' 次頁目の開始
                 PageStart()
             End If

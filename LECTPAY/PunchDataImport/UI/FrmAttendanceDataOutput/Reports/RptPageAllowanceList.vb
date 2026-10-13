@@ -118,6 +118,7 @@ Public Class RptPageAllowanceList
     ' 締め状態
     Private _closingState As MonthlyClosingMode
 
+    Private _totalPage As Integer
 
 #Region "[メソッド]"
 
@@ -134,9 +135,10 @@ Public Class RptPageAllowanceList
     ''' </summary>
     ''' <param name="targetDate"></param>
     ''' <param name="reportSourceDataTable"></param>
-    Public Sub New(ByVal targetDate As Date, ByVal reportSourceDataTable As DataTable, ByVal closingState As MonthlyClosingMode)
+    Public Sub New(ByVal targetDate As Date, ByVal reportSourceDataTable As DataTable, ByVal closingState As MonthlyClosingMode, totalPage As Integer)
         MyBase.New(targetDate, reportSourceDataTable)
         Me._closingState = closingState
+        Me._totalPage = totalPage
     End Sub
 
     ''' <summary>
@@ -175,6 +177,8 @@ Public Class RptPageAllowanceList
         Dim cellUtil As New CellReportUtil(m_CellReport)
         Dim rowNo As Integer = 0
         Dim headerCompleted As Boolean = False
+
+        '_totalPage
 
         ' 年月
         cellUtil.CellValue(FMT_CELL_YEAR, 0, rowNo, TargetDate.Year, ATTR_CELL_YEAR)
