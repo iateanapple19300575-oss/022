@@ -67,7 +67,9 @@
             Dim dt As DataTable = sorted.Clone()
 
             For i As Integer = 0 To chunkSize - 1
-                If index >= total Then Exit For
+                If index >= total Then
+                    Exit For
+                End If
                 dt.ImportRow(sorted.Rows(index))
                 index += 1
             Next
@@ -79,6 +81,47 @@
         End While
 
         Return result
+    End Function
+
+    ''' <summary>
+    ''' DataTable をソート＋フィルタして複製する（FW3.5 互換）
+    ''' </summary>
+    ''' <param name="source">元の DataTable</param>
+    ''' <param name="filterExpression">例. "Status = 'OK' AND Amount > 100"</param>
+    ''' <param name="sortExpression">例. "ID ASC, Date DESC"</param>
+    Public Shared Function CloneDataTable(source As DataTable,
+                                          filterExpression As String,
+                                          sortExpression As String) As DataTable
+
+        Dim result As New DataTable()
+
+        If source Is Nothing OrElse source.Rows.Count = 0 Then
+            Return result
+        End If
+
+        ' --- DataView によるソート＋フィルタ ---
+        Dim view As New DataView(source)
+
+        If filterExpression IsNot Nothing AndAlso filterExpression <> "" Then
+            view.RowFilter = filterExpression
+        End If
+
+        If sortExpression IsNot Nothing AndAlso sortExpression <> "" Then
+            view.Sort = sortExpression
+        End If
+
+        ' --- 絞り込み＋ソート済みの DataTable を作成 ---
+        Dim filteredSorted As DataTable = view.ToTable()
+
+        ' --- Clone（構造コピー） ---
+        Dim dt As DataTable = filteredSorted.Clone()
+
+        ' --- 行コピー ---
+        For Each row As DataRow In filteredSorted.Rows
+            dt.ImportRow(row)
+        Next
+
+        Return dt
     End Function
 
 End Class
