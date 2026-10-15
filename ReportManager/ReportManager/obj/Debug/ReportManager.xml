@@ -1,0 +1,118 @@
+﻿<?xml version="1.0"?>
+<doc>
+<assembly>
+<name>
+ReportManager
+</name>
+</assembly>
+<members>
+<member name="T:ReportManager.My.Resources.Resources">
+<summary>
+  A strongly-typed resource class, for looking up localized strings, etc.
+</summary>
+</member>
+<member name="P:ReportManager.My.Resources.Resources.ResourceManager">
+<summary>
+  Returns the cached ResourceManager instance used by this class.
+</summary>
+</member>
+<member name="P:ReportManager.My.Resources.Resources.Culture">
+<summary>
+  Overrides the current thread's CurrentUICulture property for all
+  resource lookups using this strongly typed resource class.
+</summary>
+</member>
+<member name="T:ReportManager.PdfDocumentManager">
+ <summary>
+ 帳票ブロックを管理し、PDF全体の通しページを統括するクラス
+ </summary>
+</member>
+<member name="M:ReportManager.PdfDocumentManager.AddReport(ReportManager.ReportListPageBase,System.Int32,System.Int32)">
+ <summary>
+ 管理する ReportListPage クラスを追加する。
+ </summary>
+</member>
+<member name="M:ReportManager.PdfDocumentManager.Reset">
+ <summary>
+ 現在のページ番号を初期化する。
+ </summary>
+</member>
+<member name="M:ReportManager.PdfDocumentManager.NextPage">
+ <summary>
+ 現在のページ番号を 1 進める。
+ </summary>
+</member>
+<member name="M:ReportManager.PdfDocumentManager.CurrentPage">
+ <summary>
+ 現在のページ番号を取得する。
+ </summary>
+ <returns></returns>
+</member>
+<member name="M:ReportManager.PdfDocumentManager.TotalPages">
+ <summary>
+ 総ページ数を取得する。
+ </summary>
+ <returns></returns>
+</member>
+<member name="T:ReportManager.ReportAAdapter">
+ <summary>
+ 帳票
+ </summary>
+</member>
+<member name="M:ReportManager.ReportAAdapter.GetBlockPageFormatText">
+ <summary>
+ 一覧のタイトル文言を取得します。
+ </summary>
+</member>
+<member name="T:ReportManager.ReportBAdapter">
+ <summary>
+ 帳票
+ </summary>
+</member>
+<member name="M:ReportManager.ReportBAdapter.GetBlockPageFormatText">
+ <summary>
+ 一覧のタイトル文言を取得します。
+ </summary>
+</member>
+<member name="T:ReportManager.ReportCAdapter">
+ <summary>
+ 帳票
+ </summary>
+</member>
+<member name="M:ReportManager.ReportCAdapter.GetBlockPageFormatText">
+ <summary>
+ 帳票Cはフォーマットを変えたいので、親のメソッドをオーバーライド（上書き）します
+ </summary>
+</member>
+<member name="M:ReportManager.ReportListPageBase.SetManager(ReportManager.PdfDocumentManager)">
+ <summary>帳票管理マネージャーをセットする</summary>
+</member>
+<member name="M:ReportManager.ReportListPageBase.NextPage">
+ <summary>
+ 帳票内のページを進める
+ 
+ 同時に帳票管理マネージャーを通しページのカウントアップを依頼します。
+ </summary>
+</member>
+<member name="M:ReportManager.ReportListPageBase.GetReportCurrentPage">
+ <summary>
+ レポート全体の現在ページ番号を取得します。
+ </summary>
+</member>
+<member name="M:ReportManager.ReportListPageBase.GetReportTotalPages">
+ <summary>
+ レポート全体の総ページ数を取得します。
+ </summary>
+</member>
+<member name="M:ReportManager.ReportListPageBase.GetBlockPageFormatText">
+ <summary>
+ ブロック内ページ番号のフォーマット文字列を作成します。（基本形）
+ </summary>
+</member>
+<member name="M:ReportManager.ReportListPageBase.GetReportPageFormatText">
+ <summary>
+ レポート全体ページ番号のフォーマット文字列を作成します。（基本形）
+ </summary>
+</member>
+</members>
+</doc>

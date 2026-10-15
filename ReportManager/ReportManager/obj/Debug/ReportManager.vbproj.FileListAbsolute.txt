@@ -1,0 +1,11 @@
+D:\TEST\023\ReportManager\ReportManager\bin\Debug\ReportManager.exe
+D:\TEST\023\ReportManager\ReportManager\bin\Debug\ReportManager.pdb
+D:\TEST\023\ReportManager\ReportManager\bin\Debug\ReportManager.xml
+D:\TEST\023\ReportManager\ReportManager\obj\Debug\ReportManager.vbprojAssemblyReference.cache
+D:\TEST\023\ReportManager\ReportManager\obj\Debug\ReportManager.Form1.resources
+D:\TEST\023\ReportManager\ReportManager\obj\Debug\ReportManager.Resources.resources
+D:\TEST\023\ReportManager\ReportManager\obj\Debug\ReportManager.vbproj.GenerateResource.cache
+D:\TEST\023\ReportManager\ReportManager\obj\Debug\ReportManager.vbproj.CoreCompileInputs.cache
+D:\TEST\023\ReportManager\ReportManager\obj\Debug\ReportManager.exe
+D:\TEST\023\ReportManager\ReportManager\obj\Debug\ReportManager.xml
+D:\TEST\023\ReportManager\ReportManager\obj\Debug\ReportManager.pdb
